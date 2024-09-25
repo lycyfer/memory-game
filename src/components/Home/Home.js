@@ -8,18 +8,24 @@ const Home = ({ rows, cols, difficulty, timeRemaining, onBackToMain }) => {
     const tiles = useSelector((state) => state.tiles);
     const selectedTiles = useSelector((state) => state.selectedTiles);
     const matchedTiles = useSelector((state) => state.matchedTiles);
-    // const gameOver = useSelector((state) => state.gameOver);
     const dispatch = useDispatch();
+
     const [gameOver, setGameOver] = useState(false);
     const [timeLeft, setTimeLeft] = useState(timeRemaining);
     const [showVictory, setShowVictory] = useState(false);
     const [showDefeat, setShowDefeat] = useState(false);
     const [isComparing, setIsComparing] = useState(false);
+    const [notificationVisible, setNotificationVisible] = useState(false);
 
+    // Инициализация игры
     useEffect(() => {
         dispatch(initGame(rows));
+        setShowVictory(false);
+        setShowDefeat(false);
+        setNotificationVisible(false);
     }, [dispatch, rows]);
 
+    // Таймер для игры
     useEffect(() => {
         if (difficulty > 1 && timeLeft > 0 && !gameOver) {
             const timerId = setInterval(() => {
@@ -28,11 +34,13 @@ const Home = ({ rows, cols, difficulty, timeRemaining, onBackToMain }) => {
 
             return () => clearInterval(timerId);
         } else if (timeLeft === 0 && !gameOver) {
-            setShowDefeat(true)
+            setShowDefeat(true);
             setGameOver(true);
+            setTimeout(() => setNotificationVisible(true), 100);
         }
     }, [difficulty, timeLeft, gameOver]);
 
+    // Обработка выбора плиток
     useEffect(() => {
         if (selectedTiles.length === 2 && !isComparing) {
             setIsComparing(true);
@@ -44,36 +52,38 @@ const Home = ({ rows, cols, difficulty, timeRemaining, onBackToMain }) => {
                     setIsComparing(false);
                 }, 1000);
             } else {
-
                 setIsComparing(false);
             }
         }
     }, [selectedTiles, dispatch, tiles, isComparing]);
 
+    // Проверка на завершение игры (все плитки найдены)
     useEffect(() => {
         if (matchedTiles.length === tiles.length && tiles.length > 0) {
-            console.log("end")
-            setShowVictory(true)
+            setShowVictory(true);
             setGameOver(true);
+            setTimeout(() => setNotificationVisible(true), 100);
         }
-    }, [matchedTiles, tiles])
+    }, [matchedTiles, tiles]);
 
+    // Обработчик для новой игры
     const handleNewGame = () => {
-        setShowVictory(false)
-        setShowDefeat(false)
-        setGameOver(false)
-        onBackToMain()
-    }
+        setShowVictory(false);
+        setShowDefeat(false);
+        setGameOver(false);
+        setNotificationVisible(false);
+        onBackToMain(); // Возвращаем пользователя на главный экран
+    };
 
     return (
         <div className={`home-container ${showVictory || showDefeat ? "game-over" : ""}`}>
             {showVictory && (
-                <div className={`notification victory ${showVictory ? 'show' : ''}`}>
+                <div className={`notification victory ${notificationVisible ? 'show' : ''}`}>
                     <p>Victory! You matched all the tiles!</p>
                 </div>
             )}
             {showDefeat && (
-                <div className={`notification defeat ${showDefeat ? 'show' : ''}`}>
+                <div className={`notification defeat ${notificationVisible ? 'show' : ''}`}>
                     <p>Time's up! You lost the game.</p>
                 </div>
             )}
@@ -94,7 +104,6 @@ const Home = ({ rows, cols, difficulty, timeRemaining, onBackToMain }) => {
                                 color={tile.color}
                                 isOpen={tile.isOpen}
                                 isMatched={matchedTiles.includes(index)}
-                                // onClick={() => dispatch(selectTile(index))}
                                 onClick={() => !isComparing && dispatch(selectTile(index))}
                             />
                         </div>
