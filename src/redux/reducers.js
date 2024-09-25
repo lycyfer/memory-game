@@ -50,11 +50,14 @@ const rootReducer = (state = initialState, action) => {
             if (selectedTiles.length === 2) {
                 const [firstTile, secondTile] = selectedTiles;
                 if (state.tiles[firstTile].color === state.tiles[secondTile].color) {
+                    const updatedMatchedTiles = [...state.matchedTiles, firstTile, secondTile];
+                    const isGameOver = updatedMatchedTiles.length === state.tiles.length;
                     return {
                         ...state,
                         tiles: newTiles,
                         selectedTiles: [],
-                        matchedTiles: [...state.matchedTiles, firstTile, secondTile],
+                        matchedTiles: updatedMatchedTiles,
+                        gameOver: isGameOver,
                     };
                 } else {
                     return {

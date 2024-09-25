@@ -45,18 +45,6 @@ const LeftBar = ({ onGridSizeChange, onDifficultyChange, difficulty }) => {
                     >
                         8x8
                     </button>
-                    {/* <button
-                        className={selectedGridSize === 16 ? "active" : ""}
-                        onClick={() => handleGridSizeChange(16)}
-                    >
-                        16x16
-                    </button> */}
-                    {/* <button
-                        className={selectedGridSize === 32 ? "active" : ""}
-                        onClick={() => handleGridSizeChange(32)}
-                    >
-                        32x32
-                    </button> */}
                 </div>
             </div>
 

@@ -9,37 +9,43 @@ import './App.css';
 function App() {
   const [showLogoAnimation, setShowLogoAnimation] = useState(true);
   const [showRouter, setShowRouter] = useState(false);
-  const [gridSize, setGridSize] = useState(4); // Размер сетки по умолчанию 4x4
-  const [difficulty, setDifficulty] = useState(1); // Уровень сложности по умолчанию 1
+  const [gridSize, setGridSize] = useState(4)
+  const [difficulty, setDifficulty] = useState(1)
   const [isGameStarted, setIsGameStarted] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(null); // Таймер
+  const [timeRemaining, setTimeRemaining] = useState(null);
+  const [gameOver, setGameOver] = useState(false)
 
   useEffect(() => {
-    const animationDuration = 4500; // Длительность анимации в миллисекундах
+    const animationDuration = 4500;
 
     const routerTimeout = setTimeout(() => {
       setShowRouter(true);
-    }, animationDuration); // Задержка перед показом роутера равна длительности анимации
+    }, animationDuration);
 
     return () => {
       clearTimeout(routerTimeout);
     };
   }, []);
 
-  // Установка времени на основе сложности
   useEffect(() => {
     if (difficulty === 2) {
-      setTimeRemaining(120); // 2 минуты для уровня сложности 2
+      setTimeRemaining(120);
     } else if (difficulty === 3) {
-      setTimeRemaining(60); // 1 минута для уровня сложности 3
+      setTimeRemaining(60);
     } else {
-      setTimeRemaining(null); // Без таймера для уровня сложности 1
+      setTimeRemaining(null);
     }
   }, [difficulty]);
 
   const startGame = () => {
     setIsGameStarted(true);
+    setGameOver(false)
   };
+
+  const backToMain = () => {
+    setIsGameStarted(false);
+    setGameOver(true)
+  }
 
   const router = createBrowserRouter([
     {
@@ -54,6 +60,7 @@ function App() {
               cols={gridSize}
               difficulty={difficulty}
               timeRemaining={timeRemaining}
+              onBackToMain={backToMain}
             />
           ) : (
             <div className="game-settings">
